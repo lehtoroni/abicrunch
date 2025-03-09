@@ -10,9 +10,14 @@ export function CalcVariablePalette(props: { state: GlobalState }) {
     const { state } = props;
     
     const [scope, updateScope] = useCalcScope(state);
+    const SCOPE_ENTRIES = Object.entries(scope);
     
     return <div className='calc-command-palette'>
-        {Object.entries(scope).filter(en => !en[0].startsWith('____')).map(([key, value], n) => {
+        {SCOPE_ENTRIES.length == 0 &&
+            <div className='calc-palette-info'>
+                <Lang fi='Määrittelemäsi funktiot ja muuttujat näkyvät tässä.' en='User-defined functions and variables will be displayed here.'/>
+            </div>}
+        {SCOPE_ENTRIES.filter(en => !en[0].startsWith('____')).map(([key, value], n) => {
             
             return <div
                 className='calc-command'

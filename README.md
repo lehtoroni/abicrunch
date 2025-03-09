@@ -1,5 +1,5 @@
 <p align="center" width="100%">
-<img src="src/assets/abikronts.png" width="128">
+<img src="src/assets/icon.png" width="150">
 <h1 style="text-align: center;">AbiCrunch</h1>
 </p>
 
@@ -8,23 +8,17 @@
 AbiCrunch is developed with the Finnish matriculation examination system in mind,
 it should provide a familiar enough interface and usage experience to students who have learned to use SpeedCrunch.
 
------
-
 ## Technology used
 - 🚀 React + TypeScript
 - 🔢 Parsing based on built-in fork of [expr-eval](https://github.com/silentmatt/expr-eval) patched with [Decimal.js](https://github.com/MikeMcl/decimal.js)
-
------
 
 ## ⚠️ Disclaimer ⚠️
 **This software is still in a fragile beta testing phase.**
 Do not expect it to work properly. Do not trust it for doing important calculations.
 
------
+## Current state
 
-## Working & Not Working
-
-### Currently working
+### Implemented and working
 - ✅ All basic calculations of expr-eval with Decimal.js
 - ✅ Angle degree/radian modes for trigonometry
 - ✅ User-defined functions and variables
@@ -33,6 +27,7 @@ Do not expect it to work properly. Do not trust it for doing important calculati
 - ✅ Variable palette
 
 ### To-Do list
+- ⏳️ On-screen keypad
 - ⏳️ More built-in functions
     - ⏳️ Statistical functions: `average`, `geomean`, `median`, `product`, `variance`, `stddev`, `absdev`
     - ⏳️ Distribution functions 

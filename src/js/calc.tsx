@@ -306,7 +306,7 @@ export function AbicrunchCalc(props: { state: GlobalState }) {
             </div>
             
             <div className='bottom'>
-                bottom
+                
             </div>
             
         </div>
