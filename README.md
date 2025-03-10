@@ -10,7 +10,7 @@ it should provide a familiar enough interface and usage experience to students w
 
 ## Technology used
 - 🚀 React + TypeScript
-- 🔢 Parsing based on built-in fork of [expr-eval](https://github.com/silentmatt/expr-eval) patched with [Decimal.js](https://github.com/MikeMcl/decimal.js)
+- 🔢 Parsing based on a built-in fork of [expr-eval](https://github.com/silentmatt/expr-eval) patched with [Decimal.js](https://github.com/MikeMcl/decimal.js)
 
 ## ⚠️ Disclaimer ⚠️
 **This software is still in a fragile beta testing phase.**
