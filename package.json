@@ -1,18 +1,17 @@
 {
-  "name": "ld-parcel-preact-base",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "abicrunch",
+  "version": "0.0.1",
+  "description": "Wannabe Scientific Calculator for Digital Examination Systems",
   "scripts": {
     "dev": "parcel src/index.html",
     "build": "parcel build src/index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "https://github.com/lehtoroni/",
-  "license": "WTFPL",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lehtoroni/template-parcel-ts-preact.git"
+    "url": "https://github.com/lehtoroni/abicrunch.git"
   },
   "devDependencies": {
     "@parcel/transformer-less": "^2.9.3",
