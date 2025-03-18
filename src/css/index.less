@@ -390,3 +390,45 @@ i[class^="ri-"] {
         }
     }
 }
+
+.calc-guide {
+    font-size: 12px;
+    
+    details {
+        display: block;
+        border: 1px solid gray;
+        border-radius: 4px;
+        padding: 3px;
+        user-select: none;
+        background-color: rgba(255, 255, 255, 0.3);
+        
+        &:not(:first-child) {
+            border-top: none;
+        }
+        
+        summary {
+            cursor: pointer;
+            font-size: 13px;
+            
+            &:hover {
+                color: var(--color-accent);
+            }
+        }
+        
+        &[open] {
+            background-color: rgba(255, 255, 255, 0.6);
+            summary {
+                font-weight: bold;
+                color: var(--color-accent);
+                margin-bottom: 4px;
+            }
+        }
+        
+        ul {
+            padding-left: 2em;
+            li:not(:last-child) {
+                margin-bottom: 0.5em;
+            }
+        }
+    }
+}

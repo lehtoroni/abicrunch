@@ -19,6 +19,16 @@ export function AbicrunchTopMenu(props: { state: GlobalState }) {
             title: <Lang fi='Istunto' en='Session'/>,
             menuItems: [
                 {
+                    title: <Lang fi='Tyhjennä muisti' en='Clear memory'/>,
+                    onClick: () => {
+                        const keys = Object.keys(state.scope);
+                        for (const key of keys) {
+                            delete state.scope[key];
+                        }
+                        state.events.emit(CalcEvent.SCOPE_UPDATE, state.scope);
+                    }
+                },
+                {
                     title: <Lang fi='Sulje' en='Quit'/>,
                     onClick: () => {
                         window.close();
@@ -147,7 +157,15 @@ export function AbicrunchTopMenu(props: { state: GlobalState }) {
         {
             title: <Lang fi='Apua' en='Help'/>,
             menuItems: [
-                
+                {
+                    title: <Lang fi='Käyttöohje' en='Guide'/>,
+                    onClick: () => {
+                        setPrefs(prefs => ({ ...prefs, isSidebarVisible: true }));
+                        setTimeout(() => {
+                            state.events.emit(CalcEvent.COMMAND_SIDEBAR_TAB, 2);
+                        }, 100);
+                    }
+                },
             ]
         }
     ];
@@ -254,7 +272,7 @@ export function MenuSubmenu(props: {
                         <div>
                             {item.isRadio
                                 ? (item.isChecked ? <RemixIcon icon='radio-button-line'/> : <RemixIcon icon='checkbox-blank-circle-line'/>)
-                                : ''}
+                                : (item.isChecked ? <RemixIcon icon='check-line'/> : '')}
                         </div>
                         <div>{item.title}</div>
                     </div>

@@ -18,6 +18,7 @@ import { CalcCommand, CalcCommandPalette } from './ui/palette';
 import { CalcVariablePalette } from './ui/variables';
 import { convertUnicodeConstants, convertUnicodeExponents } from './utils/utils';
 import { CalcKeypad } from './ui/keypad';
+import { CalcHelp } from './ui/help';
 
 export type HistoryLine = {
     input: string,
@@ -354,6 +355,20 @@ export function CalcSidebarTabs(props: { state: GlobalState }) {
     const { state } = props;
     const [currentTab, setCurrentTab] = useState<number>(0);
     
+    useEffect(() => {
+        
+        function onChangeTab(toTab: number) {
+            setCurrentTab(toTab);
+        }
+        
+        state.events.addListener(CalcEvent.COMMAND_SIDEBAR_TAB, onChangeTab);
+        
+        return () => {
+            state.events.removeListener(CalcEvent.COMMAND_SIDEBAR_TAB, onChangeTab);
+        };
+        
+    }, []);
+    
     const TABS = [
         ['commands', 'puzzle-line', <Lang fi='Komennot' en='Commands'/>, <div>
             <CalcCommandPalette state={state}/>
@@ -362,7 +377,7 @@ export function CalcSidebarTabs(props: { state: GlobalState }) {
             <CalcVariablePalette state={state}/> 
         </div>],
         ['help', 'lightbulb-line', <Lang fi='Ohje' en='Guide'/>, <div>
-            hälp
+            <CalcHelp state={state}/>
         </div>],
     ];
     
