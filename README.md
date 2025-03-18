@@ -17,6 +17,8 @@ Do not expect it to work properly. Do not trust it for doing important calculati
 
 ## Current state
 
+**👉️ [Live demo](https://crunch.lehtodigital.fi/?view=standalone)**
+
 ### Implemented and working
 - ✅ All basic calculations of expr-eval with Decimal.js
 - ✅ Supports both dot `.` and `,` comma as decimal separator
