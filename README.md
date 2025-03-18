@@ -57,7 +57,7 @@ Do not expect it to work properly. Do not trust it for doing important calculati
 -----
 
 ## Contributing
-Contributions are welcome. Feel free to fork this repository and to suggest changes with pull requests. Please stay in line with the code style and 
+Contributions are welcome. Feel free to fork this repository and to suggest changes with pull requests. Please stay in line with the existing code style. Please also read the general goal(s) of this project higher above.
 
 ## License
 MIT
