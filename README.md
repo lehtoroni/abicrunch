@@ -3,10 +3,9 @@
 <h1 style="text-align: center;">AbiCrunch</h1>
 </p>
 
-**Abicrunch is a browser-based high-precision scientific calculator similar to SpeedCrunch.**
+**Abicrunch is a browser-based high-precision scientific calculator similar to [SpeedCrunch](https://heldercorreia.bitbucket.io/speedcrunch/).**
 
-AbiCrunch is developed with the Finnish matriculation examination system in mind,
-it should provide a familiar enough interface and usage experience to students who have learned to use SpeedCrunch.
+The main goal of developing AbiCrunch at the moment is attempting to provide a proof-of-concept scientific calculator for the digital Finnish matriculation examination system. It should provide a familiar enough interface and UX to students who have learned to use SpeedCrunch during math lessons.
 
 ## Technology used
 - 🚀 React + TypeScript
@@ -20,24 +19,26 @@ Do not expect it to work properly. Do not trust it for doing important calculati
 
 ### Implemented and working
 - ✅ All basic calculations of expr-eval with Decimal.js
+- ✅ Supports both dot `.` and `,` comma as decimal separator
 - ✅ Angle degree/radian modes for trigonometry
 - ✅ User-defined functions and variables
 - ✅ Configurable precision (decimals and exponent notation)
 - ✅ Command palette
 - ✅ Variable palette
+- ✅ On-screen keypad
 
 ### To-Do list
-- ⏳️ On-screen keypad
+- ⏳️ Thoroughly test all built-in functions
+- ⏳️ Add multilang support & changeable language
 - ⏳️ More built-in functions
-    - ⏳️ Statistical functions: `average`, `geomean`, `median`, `product`, `variance`, `stddev`, `absdev`
-    - ⏳️ Distribution functions 
-    - ⏳️ Complex number support
-- ⏳️ Support for comma based `,` decimal notation
+    - ⏳️ More statistical function
+    - ⏳️ More distribution functions 
+    - ⏳️ Complex number support?
 - ⏳️ Help & hints for command palette
 - ⏳️ User guide and help pages
-- ⏳️ "Value of selection"
-- ⏳️ Parsing and evaluation in a web worker (+ calculation timeout)
-- ⏳️ Creating an actual fork of expr-eval
+- ⏳️ "Value of selection"?
+- ⏳️ Move parsing and evaluation to a web worker (+ calculation timeout)
+- ⏳️ Create an actual fork of expr-eval instead of current approach
 
 ### "Maybe in the future" (list of non-essential ideas)
 - ❓️ Support parsing TeX expressions (e.g. `\frac{1}{2}` => `1/2`)
@@ -45,6 +46,13 @@ Do not expect it to work properly. Do not trust it for doing important calculati
 ### Not going to be implemented
 - 🚫 Any CAS-like features (e.g. derivatives, integrals, smart simplification, etc.)
 - 🚫 Built-in book of formulas (as Abitti®️ has multible tables built in)
+
+
+## Screenshots
+
+<img src="https://lehtodigital.fi/f/uqBCh" height="150"> 
+<img src="https://lehtodigital.fi/f/5FpIs" height="150">
+<img src="https://lehtodigital.fi/f/v2UEt" height="150">
 
 -----
 
