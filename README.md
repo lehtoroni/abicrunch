@@ -31,7 +31,7 @@ Do not expect it to work properly. Do not trust it for doing important calculati
 - ⏳️ Thoroughly test all built-in functions
 - ⏳️ Add multilang support & changeable language
 - ⏳️ More built-in functions
-    - ⏳️ More statistical function
+    - ⏳️ More statistical functions
     - ⏳️ More distribution functions 
     - ⏳️ Complex number support?
 - ⏳️ Help & hints for command palette
