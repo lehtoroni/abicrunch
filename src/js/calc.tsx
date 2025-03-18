@@ -9,14 +9,15 @@ import { Parser } from '../../expr-eval-decimal';
 import { getDecimalInstance } from '../../expr-eval-decimal';
 const DecimalInstance = getDecimalInstance();
 
-import { Lang } from './lang';
+import { lang, Lang } from './lang';
 import { CalcEvent } from './event';
 import { CalcAngleUnitSwitch } from './ui/angleUnitSwitch';
 import { AbicrunchTopMenu } from './ui/topMenu';
 import { RemixIcon } from './utils/remixicon';
 import { CalcCommand, CalcCommandPalette } from './ui/palette';
 import { CalcVariablePalette } from './ui/variables';
-import { convertUnicodeExponents } from './utils/utils';
+import { convertUnicodeConstants, convertUnicodeExponents } from './utils/utils';
+import { CalcKeypad } from './ui/keypad';
 
 export type HistoryLine = {
     input: string,
@@ -43,6 +44,7 @@ export function AbicrunchCalc(props: { state: GlobalState }) {
         try {
             
             line = convertUnicodeExponents(line);
+            line = convertUnicodeConstants(line);
             
             const expr = parser.parse(line);
             const res = expr.evaluate(state.scope);
@@ -55,6 +57,8 @@ export function AbicrunchCalc(props: { state: GlobalState }) {
                     break;
                 }
             }
+            
+            state.scope[`ans`] = res;
             
             setHistoryLines(l => [...l, {
                 input: line,
@@ -213,15 +217,23 @@ export function AbicrunchCalc(props: { state: GlobalState }) {
             
         }
         
+        function onEvalExpression() {
+            evalLine(inputText);
+            setInputText('');
+            setHistoryBrowse(0);
+        }
+        
         state.events.addListener(CalcEvent.COMMAND_SELECT_EXPRESSION, onSelectExpression);
         state.events.addListener(CalcEvent.COMMAND_WRAP_EXPRESSION, onWrapExpression);
+        state.events.addListener(CalcEvent.COMMAND_EVALUATE, onEvalExpression);
         
         return () => {
             state.events.removeListener(CalcEvent.COMMAND_SELECT_EXPRESSION, onSelectExpression);
             state.events.removeListener(CalcEvent.COMMAND_WRAP_EXPRESSION, onWrapExpression);
+            state.events.removeListener(CalcEvent.COMMAND_EVALUATE, onEvalExpression);
         };
         
-    }, [selection]);
+    }, [selection, inputText]);
     
     useEffect(() => {
         
@@ -234,7 +246,29 @@ export function AbicrunchCalc(props: { state: GlobalState }) {
         
     }, [historyBrowse, historyLines]);
     
-    return <div className='abicrunch'>
+    useEffect(() => {
+        
+        if (currentPrefs.isSidebarVisible) {
+            document.body.classList.add('has-sidebar');
+            document.body.classList.remove('no-sidebar');
+        } else {
+            document.body.classList.remove('has-sidebar');
+            document.body.classList.add('no-sidebar');
+        }
+        
+        if (currentPrefs.isKeypadVisible) {
+            document.body.classList.add('has-keypad');
+            document.body.classList.remove('no-keypad');
+        } else {
+            document.body.classList.remove('has-keypad');
+            document.body.classList.add('no-keypad');
+        }
+        
+    }, [currentPrefs]);
+    
+    return <div className={[
+        'abicrunch'
+    ].join(' ')}>
         
         <div className='top'>
             <div className='menu'>
@@ -296,7 +330,7 @@ export function AbicrunchCalc(props: { state: GlobalState }) {
                                 end: e.currentTarget.selectionEnd || 0,
                                 direction: e.currentTarget.selectionDirection || 'forward',
                             });
-                        }}  
+                        }}
                         />
                 </div>
             </div>
@@ -306,7 +340,7 @@ export function AbicrunchCalc(props: { state: GlobalState }) {
             </div>
             
             <div className='bottom'>
-                
+                <CalcKeypad state={state}/>
             </div>
             
         </div>

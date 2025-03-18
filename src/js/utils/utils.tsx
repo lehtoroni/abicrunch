@@ -74,3 +74,7 @@ export function convertUnicodeExponents(str: string) {
     });
     
 }
+
+export function convertUnicodeConstants(str: string) {
+    return str.replace(/π/gm, '(pi)');
+}

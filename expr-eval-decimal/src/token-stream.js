@@ -97,8 +97,8 @@ TokenStream.prototype.isBracket = function () {
 
 TokenStream.prototype.isComma = function () {
   var c = this.expression.charAt(this.pos);
-  if (c === ',') {
-    this.current = this.newToken(TCOMMA, ',');
+  if (c === ';') {
+    this.current = this.newToken(TCOMMA, ';');
     this.pos++;
     return true;
   }
@@ -106,6 +106,7 @@ TokenStream.prototype.isComma = function () {
 };
 
 TokenStream.prototype.isSemicolon = function () {
+  return false; // no semicolon parsing as it's used in place of comma
   var c = this.expression.charAt(this.pos);
   if (c === ';') {
     this.current = this.newToken(TSEMICOLON, ';');
@@ -121,7 +122,7 @@ TokenStream.prototype.isConst = function () {
   for (; i < this.expression.length; i++) {
     var c = this.expression.charAt(i);
     if (c.toUpperCase() === c.toLowerCase()) {
-      if (i === this.pos || (c !== '_' && c !== '.' && (c < '0' || c > '9'))) {
+      if (i === this.pos || (c !== '_' && c !== '.' && c !== ',' && (c < '0' || c > '9'))) {
         break;
       }
     }
@@ -310,7 +311,7 @@ TokenStream.prototype.isRadixInteger = function () {
 
   if (valid) {
     //this.current = this.newToken(TNUMBER, parseInt(this.expression.substring(startPos, pos), radix));
-    this.current = this.newToken(TNUMBER, new Decimal(this.expression.substring(startPos, pos), radix));
+    this.current = this.newToken(TNUMBER, new Decimal(this.expression.substring(startPos, pos).replace(/,/gm, '.'), radix));
     this.pos = pos;
   }
   return valid;
@@ -327,8 +328,8 @@ TokenStream.prototype.isNumber = function () {
 
   while (pos < this.expression.length) {
     c = this.expression.charAt(pos);
-    if ((c >= '0' && c <= '9') || (!foundDot && c === '.')) {
-      if (c === '.') {
+    if ((c >= '0' && c <= '9') || (!foundDot && (c === '.' || c === ','))) {
+      if (c === '.' || c === ',') {
         foundDot = true;
       } else {
         foundDigits = true;
@@ -368,7 +369,7 @@ TokenStream.prototype.isNumber = function () {
 
   if (valid) {
     //this.current = this.newToken(TNUMBER, parseFloat(this.expression.substring(startPos, pos)));
-    this.current = this.newToken(TNUMBER, new Decimal(this.expression.substring(startPos, pos)));
+    this.current = this.newToken(TNUMBER, new Decimal(this.expression.substring(startPos, pos).replace(/,/gm, '.')));
     this.pos = pos;
   } else {
     this.pos = resetPos;
@@ -380,7 +381,7 @@ TokenStream.prototype.isOperator = function () {
   var startPos = this.pos;
   var c = this.expression.charAt(this.pos);
 
-  if (c === '+' || c === '-' || c === '*' || c === '/' || c === '%' || c === '^' || c === '?' || c === ':' || c === '.') {
+  if (c === '+' || c === '-' || c === '*' || c === '/' || c === '%' || c === '^' || c === '?' || c === ':' || c === '.' || c === ',') {
     this.current = this.newToken(TOP, c);
   } else if (c === '∙' || c === '•') {
     this.current = this.newToken(TOP, '*');

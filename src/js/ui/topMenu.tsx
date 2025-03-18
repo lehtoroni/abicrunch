@@ -76,7 +76,20 @@ export function AbicrunchTopMenu(props: { state: GlobalState }) {
         {
             title: <Lang fi='Näytä' en='View'/>,
             menuItems: [
-                
+                {
+                    title: <Lang fi='Näytä sivupalkki' en='Show sidebar'/>,
+                    isChecked: calcPrefs.isSidebarVisible,
+                    onClick: () => {
+                        setPrefs(prefs => ({ ...prefs, isSidebarVisible: !prefs.isSidebarVisible }));
+                    }
+                },
+                {
+                    title: <Lang fi='Näytä painikkeet' en='Show keypad'/>,
+                    isChecked: calcPrefs.isKeypadVisible,
+                    onClick: () => {
+                        setPrefs(prefs => ({ ...prefs, isKeypadVisible: !prefs.isKeypadVisible }));
+                    }
+                },
             ]
         },
         {

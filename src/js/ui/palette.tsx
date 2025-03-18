@@ -63,8 +63,6 @@ export const COMMANDS: Record<string, CalcCommand> = {
     'and': { title: { fi: 'Looginen JA', en: '' }, args: ['a'] },
     'or': { title: { fi: 'Looginen TAI', en: '' }, args: ['a'] },
     'in': { title: { fi: '', en: '' }, args: ['a'] },
-    '=': { title: { fi: 'Määrittely', en: '' }, args: ['a'] },
-    '[': { title: { fi: '', en: '' }, args: ['a'] },
     'random': { title: { fi: 'Satunnaisluku', en: '' }, args: ['a'], brackets: true },
     'fac': { title: { fi: '', en: '' }, args: ['a'], brackets: true },
     'min': { title: { fi: 'Minimi', en: '' }, args: ['a'], brackets: true },
@@ -75,13 +73,34 @@ export const COMMANDS: Record<string, CalcCommand> = {
     'atan2': { title: { fi: '', en: '' }, args: ['a'], brackets: true },
     'if': { title: { fi: 'Looginen JOS', en: '' }, args: ['a'] },
     'gamma': { title: { fi: 'Gamma', en: '' }, args: ['a'], brackets: true },
-    'roundTo': { title: { fi: 'Pyöristä tarkkuuteen', en: '' }, args: ['a'], brackets: true },
-    'map': { title: { fi: '', en: '' }, args: ['a'], brackets: true },
-    'fold': { title: { fi: '', en: '' }, args: ['a'], brackets: true },
-    'filter': { title: { fi: '', en: '' }, args: ['a'], brackets: true },
+    'roundTo': { title: { fi: 'Pyöristä tarkkuuteen', en: '' }, args: ['a', 'n'], brackets: true },
+    'map': { title: { fi: '', en: '' }, args: ['...'], brackets: true },
+    'fold': { title: { fi: '', en: '' }, args: ['...'], brackets: true },
+    'filter': { title: { fi: '', en: '' }, args: ['...'], brackets: true },
     'indexOf': { title: { fi: '', en: '' }, args: ['a'], brackets: true },
-    'join': { title: { fi: '', en: '' }, args: ['a'], brackets: true },
-    'sum': { title: { fi: '', en: '' }, args: ['a'], brackets: true },
+    'join': { title: { fi: '', en: '' }, args: ['...'], brackets: true },
+    'sum': { title: { fi: '', en: '' }, args: ['...'], brackets: true },
+    
+    
+    'nCr': { title: { fi: 'nCr', en: 'nCr' }, args: ['n', 'r'], brackets: true },
+    'nPr': { title: { fi: 'nPr', en: 'nr' }, args: ['n', 'r'], brackets: true },
+    
+    'average': { title: { fi: 'Keskiarvo', en: 'Average' }, args: ['...'], brackets: true },
+    'stddev': { title: { fi: 'Hajonta', en: 'Standard deviation' }, args: ['...'], brackets: true },
+    
+    'mean': { title: { fi: 'Keskiarvo', en: 'Mean' }, args: ['...'], brackets: true },
+    'variance': { title: { fi: 'Varianssi', en: 'Variance' }, args: ['...'], brackets: true },
+    'median': { title: { fi: 'Mediaani', en: 'Median' }, args: ['...'], brackets: true },
+    
+    'binompmf': { title: { fi: 'binompmf', en: 'binompmf' }, args: ['x', 'N', 'p'], brackets: true },
+    'binomcdf': { title: { fi: 'binomcdf', en: 'binomcdf' }, args: ['x', 'N', 'p'], brackets: true },
+    'binommean': { title: { fi: 'binommean', en: 'binommean' }, args: ['N', 'p'], brackets: true },
+    'binomvar': { title: { fi: 'binomvar', en: 'binomvar' }, args: ['N', 'p'], brackets: true },
+    'hyperpmf': { title: { fi: 'hypergeompmf', en: 'hypergeompmf' }, args: ['x', 'N', 'K', 'n'], brackets: true },
+    'hypercdf': { title: { fi: 'hypergeomcdf', en: 'hypergeomcdf' }, args: ['x', 'N', 'K', 'n'], brackets: true },
+    'hypermean': { title: { fi: 'hypergeommean', en: 'hypergeommean' }, args: ['N', 'K', 'n'], brackets: true },
+    'hypervar': { title: { fi: 'hypergeomvar', en: 'hypergeomvar' }, args: ['N', 'K', 'n'], brackets: true },
+    
 };
 
 const COMMAND_LIST = Object.entries(COMMANDS);
