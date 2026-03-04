@@ -40,6 +40,31 @@ const GLOBAL_STATE: GlobalState = {
 const baseUrl = new URL(window.location.href);
 const baseParams = baseUrl.searchParams;
 
+if (localStorage.getItem('__crunch_prefs')) {
+    try {
+        
+        const rawPrefs = JSON.parse(localStorage.getItem('__crunch_prefs') || '');
+        if (typeof rawPrefs !== 'object') {
+            throw new Error(`Incorrect prefs parse type in URL`);
+        }
+        
+        for (const key in GLOBAL_STATE.prefs) {
+            
+            // this is as much "validation" as we currently do...
+            if (!(key in rawPrefs)) {
+                continue;
+            }
+            
+            (GLOBAL_STATE.prefs as any)[key] = rawPrefs[key];
+            
+        }
+        
+    } catch (err) {
+        console.log(`__crunch_prefs corrupted in localStorage?`);
+        console.error(err);
+    }
+}
+
 if (baseParams.has('prefs')) {
     try {
         

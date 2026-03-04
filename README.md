@@ -46,9 +46,9 @@ Following URL parameters are supported for changing the configuration:
 - ✅ Command palette
 - ✅ Variable palette
 - ✅ On-screen keypad
+- ✅ Prefs/settings saved in localStorage
 
 ### To-Do list
-- ⏳️ Save settings in localStorage
 - ⏳️ Thoroughly test all built-in functions
 - ⏳️ More built-in functions
     - ⏳️ More statistical functions

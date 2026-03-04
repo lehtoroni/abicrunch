@@ -87,6 +87,7 @@ export function AbicrunchCalc(props: {
         
         function onPrefsChange(prefs: CalcPreferences) {
             setCurrentPrefs({ ...prefs });
+            localStorage.setItem('__crunch_prefs', JSON.stringify(prefs));
         }
         
         state.events.addListener(CalcEvent.UPDATED_CALC_PREFS, onPrefsChange);
