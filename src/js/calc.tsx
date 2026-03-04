@@ -1,6 +1,6 @@
-import { CalcPreferences, GlobalState } from '.';
+import { CalcPreferences, CrunchContext, GlobalState } from '.';
 
-import { Fragment, h } from 'preact';
+import { createContext, Fragment, h } from 'preact';
 import {useEffect, useLayoutEffect, useMemo, useRef, useState} from 'preact/hooks';
 
 import { Parser } from '../../expr-eval-decimal';
@@ -26,7 +26,11 @@ export type HistoryLine = {
     hasError?: boolean
 };
 
-export function AbicrunchCalc(props: { state: GlobalState }) {
+
+export function AbicrunchCalc(props: {
+    state: GlobalState,
+    mode: 'simple' | 'full'
+}) {
     
     const { state } = props;
     
@@ -224,14 +228,20 @@ export function AbicrunchCalc(props: { state: GlobalState }) {
             setHistoryBrowse(0);
         }
         
+        function onBackspace() {
+            setInputText(t => `${t}`.slice(0, -1))
+        }
+        
         state.events.addListener(CalcEvent.COMMAND_SELECT_EXPRESSION, onSelectExpression);
         state.events.addListener(CalcEvent.COMMAND_WRAP_EXPRESSION, onWrapExpression);
         state.events.addListener(CalcEvent.COMMAND_EVALUATE, onEvalExpression);
+        state.events.addListener(CalcEvent.COMMAND_BACKSPACE, onBackspace);
         
         return () => {
             state.events.removeListener(CalcEvent.COMMAND_SELECT_EXPRESSION, onSelectExpression);
             state.events.removeListener(CalcEvent.COMMAND_WRAP_EXPRESSION, onWrapExpression);
             state.events.removeListener(CalcEvent.COMMAND_EVALUATE, onEvalExpression);
+            state.events.removeListener(CalcEvent.COMMAND_BACKSPACE, onBackspace);
         };
         
     }, [selection, inputText]);
@@ -270,82 +280,98 @@ export function AbicrunchCalc(props: { state: GlobalState }) {
     return <div className={[
         'abicrunch'
     ].join(' ')}>
-        
-        <div className='top'>
-            <div className='menu'>
-                <AbicrunchTopMenu state={props.state}/>
-            </div>
-            <div className='switch'>
-                <CalcAngleUnitSwitch state={props.state}/>
-            </div>
-        </div>
-        
-        <div className='calc-body'>
+        <CrunchContext.Provider value={props.state}>
             
-            <div className='left'>
-                <div className='history' ref={refHistory}>
-                    {historyLines.map((line, n) =>
-                        <div className='history-line'
-                            data-has-error={`${line.hasError ?? false}`}
-                            key={n}>
-                            <div className='in'>{line.input}</div>
-                            <div className='out'>= {line.output}</div>
-                        </div>
-                    )}
+            <div className='top'>
+                <div className='menu'>
+                    <AbicrunchTopMenu state={props.state}/>
+                </div>
+                <div className='switch'>
+                    <CalcAngleUnitSwitch state={props.state}/>
+                </div>
+            </div>
+            
+            <div className='calc-body'>
+                
+                <div className='left'>
+                    <div className='history' ref={refHistory}>
+                        {props.mode == 'simple'
+                            ? <Fragment>
+                                {historyLines.length > 0 && historyLines.at(-1)
+                                    ? <div className='history-line'
+                                        data-has-error={`${historyLines.at(-1)?.hasError ?? false}`}>
+                                        <div className='out'>{historyLines.at(-1)?.output}</div>
+                                    </div>
+                                    : <div className='history-line'>
+                                        <div className='out'>&nbsp;</div>
+                                    </div>}
+                            </Fragment>
+                            : <Fragment>
+                                {historyLines.map((line, n) =>
+                                    <div className='history-line'
+                                        data-has-error={`${line.hasError ?? false}`}
+                                        key={n}>
+                                        <div className='in'>{line.input}</div>
+                                        <div className='out'>= {line.output}</div>
+                                    </div>
+                                )}
+                            </Fragment>}
+                    </div>
+                    
+                    <div className='input'>
+                        <input
+                            autoComplete={'off'}
+                            spellcheck={false}
+                            ref={refInput}
+                            value={inputText}
+                            onInput={e => {
+                                setInputText(e.currentTarget.value);
+                                setSelection({
+                                    start: e.currentTarget.selectionStart || 0,
+                                    end: e.currentTarget.selectionEnd || 0,
+                                    direction: e.currentTarget.selectionDirection || 'forward',
+                                });
+                            }}
+                            onKeyDown={e => {
+                                if (e.key == 'Enter') {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    evalLine(inputText);
+                                    setInputText('');
+                                    setHistoryBrowse(0);
+                                } else if (e.key == 'ArrowUp') {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setHistoryBrowse(b => Math.min(historyLines.length, b+1));
+                                } else if (e.key == 'ArrowDown') {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setHistoryBrowse(b => Math.max(0, b-1));
+                                }
+                            }}
+                            onSelect={e => {
+                                setSelection({
+                                    start: e.currentTarget.selectionStart || 0,
+                                    end: e.currentTarget.selectionEnd || 0,
+                                    direction: e.currentTarget.selectionDirection || 'forward',
+                                });
+                            }}
+                            />
+                    </div>
                 </div>
                 
-                <div className='input'>
-                    <input
-                        autoComplete={'off'}
-                        spellcheck={false}
-                        ref={refInput}
-                        value={inputText}
-                        onInput={e => {
-                            setInputText(e.currentTarget.value);
-                            setSelection({
-                                start: e.currentTarget.selectionStart || 0,
-                                end: e.currentTarget.selectionEnd || 0,
-                                direction: e.currentTarget.selectionDirection || 'forward',
-                            });
-                        }}
-                        onKeyDown={e => {
-                            if (e.key == 'Enter') {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                evalLine(inputText);
-                                setInputText('');
-                                setHistoryBrowse(0);
-                            } else if (e.key == 'ArrowUp') {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setHistoryBrowse(b => Math.min(historyLines.length, b+1));
-                            } else if (e.key == 'ArrowDown') {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setHistoryBrowse(b => Math.max(0, b-1));
-                            }
-                        }}
-                        onSelect={e => {
-                            setSelection({
-                                start: e.currentTarget.selectionStart || 0,
-                                end: e.currentTarget.selectionEnd || 0,
-                                direction: e.currentTarget.selectionDirection || 'forward',
-                            });
-                        }}
-                        />
+                <div className='right'>
+                    <CalcSidebarTabs state={state}/>
                 </div>
+                
+                <div className='bottom'>
+                    <CalcKeypad state={state} mode={props.mode}/>
+                </div>
+                
             </div>
             
-            <div className='right'>
-                <CalcSidebarTabs state={state}/>
-            </div>
             
-            <div className='bottom'>
-                <CalcKeypad state={state}/>
-            </div>
-            
-        </div>
-        
+        </CrunchContext.Provider>
     </div>;
     
 }

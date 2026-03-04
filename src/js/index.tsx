@@ -1,4 +1,4 @@
-import { h, render } from 'preact';
+import { createContext, h, render } from 'preact';
 import { AbicrunchCalc } from './calc';
 import EventEmitter from 'eventemitter3';
 
@@ -6,6 +6,7 @@ const base = document.querySelector('#base');
 if (!base) throw new Error(`No base?!`);
 
 export type CalcPreferences = {
+    lang: 'fi' | 'se' | 'en',
     isSidebarVisible: boolean,
     isKeypadVisible: boolean,
     isDegrees: boolean,
@@ -24,6 +25,7 @@ export type GlobalState = {
 const GLOBAL_STATE: GlobalState = {
     events: new EventEmitter(),
     prefs: {
+        lang: 'fi',
         isSidebarVisible: true,
         isKeypadVisible: true,
         isDegrees: false,
@@ -37,8 +39,46 @@ const GLOBAL_STATE: GlobalState = {
 
 const baseUrl = new URL(window.location.href);
 const baseParams = baseUrl.searchParams;
+
+if (baseParams.has('prefs')) {
+    try {
+        
+        const rawPrefs = JSON.parse(baseParams.get('prefs') || '');
+        if (typeof rawPrefs !== 'object') {
+            throw new Error(`Incorrect prefs parse type in URL`);
+        }
+        
+        for (const key in rawPrefs) {
+            (GLOBAL_STATE.prefs as any)[key] = rawPrefs[key];
+        }
+        
+    } catch (err) {
+        console.error(err);
+    }
+}
+
 if (baseParams.has('view') && baseParams.get('view') == 'standalone') {
     document.body.classList.add('standalone');
 }
 
-render(<AbicrunchCalc state={GLOBAL_STATE}/>, base);
+let calcMode: 'simple' | 'full' = 'full';
+if (baseParams.has('mode')) {
+    
+    const mode = baseParams.get('mode');
+    
+    if (mode == 'simple') {
+        
+        calcMode = 'simple';
+        document.body.classList.add('mode-simple');
+        
+        GLOBAL_STATE.prefs.precision = 20;
+        GLOBAL_STATE.prefs.isKeypadVisible = true;
+        GLOBAL_STATE.prefs.isSidebarVisible = false;
+        
+    }
+    
+}
+
+export const CrunchContext = createContext<GlobalState>(GLOBAL_STATE);
+
+render(<AbicrunchCalc state={GLOBAL_STATE} mode={calcMode}/>, base);

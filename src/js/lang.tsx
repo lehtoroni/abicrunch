@@ -1,10 +1,14 @@
+import { useContext } from 'preact/hooks';
+import { CrunchContext } from 'src/js';
+
 export function Lang(props: {
     fi: any,
     se?: any,
     en?: any
 }) {
     
-    const LANG: string = 'fi';
+    const state = useContext(CrunchContext);
+    const LANG = state.prefs.lang;
     
     switch (LANG) {
         case 'fi': {
@@ -28,7 +32,8 @@ export function lang(props: {
     en?: string
 }) {
     
-    const LANG: string = 'fi';
+    const state = useContext(CrunchContext);
+    const LANG = state.prefs.lang;
     
     switch (LANG) {
         case 'fi': {

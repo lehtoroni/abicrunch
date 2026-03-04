@@ -4,6 +4,53 @@ import { GlobalState } from '..';
 import { CalcEvent } from '../event';
 import { CalcCommand } from './palette';
 
+const KEYS_LMATH = [
+    { title: <Fragment>sin<sup>-1</sup></Fragment>, input: 'arcsin(' },
+    { title: <Fragment>^</Fragment>, input: '^' },
+    { title: <Fragment>!</Fragment>, input: '!' },
+    { title: <Fragment>C</Fragment>, command: 'clear' },
+    { title: <Fragment>&larr;</Fragment>, command: 'backspace' },
+    { title: <Fragment>(</Fragment>, input: '(' },
+    { title: <Fragment>)</Fragment>, input: ')' },
+    { title: <Fragment>√</Fragment>, input: 'sqrt(' },
+    
+    { title: <Fragment>cos<sup>-1</sup></Fragment>, input: 'arccos(' },
+    { title: <Fragment>x<sup>2</sup></Fragment>, input: '^2' },
+    { title: <Fragment><sup>3</sup>√</Fragment>, input: '^(1/n)' },
+    { title: <b>7</b>, input: '7' },
+    { title: <b>8</b>, input: '8' },
+    { title: <b>9</b>, input: '9' },
+    { title: <span className='big'>÷</span>, input: '/' },
+    { title: <Fragment>sin</Fragment>, input: 'sin(' },
+    
+    { title: <Fragment>tan<sup>-1</sup></Fragment>, input: 'arctan(' },
+    { title: <Fragment>x<sup>3</sup></Fragment>, input: '^3' },
+    { title: <Fragment>&times;10<sup>n</sup></Fragment>, input: '*10^' },
+    { title: <b>4</b>, input: '4' },
+    { title: <b>5</b>, input: '5' },
+    { title: <b>6</b>, input: '6' },
+    { title: <span className='big'>×</span>, input: '*' },
+    { title: <Fragment>cos</Fragment>, input: 'cos(' },
+    
+    { title: <Fragment>π</Fragment>, input: 'π' },
+    { title: <Fragment>log<sub><sub>10</sub></sub></Fragment>, input: 'log10(' },
+    { title: <Fragment>rand</Fragment>, input: 'random()' },
+    { title: <b>1</b>, input: '1' },
+    { title: <b>2</b>, input: '2' },
+    { title: <b>3</b>, input: '3' },
+    { title: <span className='big'>&ndash;</span>, input: '-' },
+    { title: <Fragment>tan</Fragment>, input: 'tan(' },
+    
+    { title: <Fragment>e</Fragment>, input: 'e' },
+    { title: <Fragment>ln</Fragment>, input: 'ln(' },
+    { title: <Fragment>1/x</Fragment>, input: '1/' },
+    { title: <Fragment>ans</Fragment>, input: 'ans' },
+    { title: <b>0</b>, input: '0' },
+    { title: <b>,</b>, input: ',' },
+    { title: <span className='big'>+</span>, input: '+' },
+    { title: <b>=</b>, command: '=' },
+];
+
 const KEYS = [
     { title: <b>7</b>, input: '7' },
     { title: <b>8</b>, input: '8' },
@@ -46,12 +93,12 @@ const KEYS = [
     { title: <Fragment>tan<sup>-1</sup></Fragment>, input: 'arctan(' }
 ];
 
-export function CalcKeypad(props: { state: GlobalState }) {
+export function CalcKeypad(props: { state: GlobalState, mode: 'simple' | 'full' }) {
     
     const { state } = props;
     
     return <div className='calc-keypad'>
-        {KEYS.map((key, n) =>
+        {(props.mode == 'full' ? KEYS : KEYS_LMATH).map((key, n) =>
             <div
                 className='key'
                 key={n}
@@ -65,6 +112,8 @@ export function CalcKeypad(props: { state: GlobalState }) {
                     } else {
                         if (key.command == 'clear') {
                             state.events.emit(CalcEvent.COMMAND_SET_EXPRESSION, '');
+                        } else if (key.command == 'backspace') {
+                            state.events.emit(CalcEvent.COMMAND_BACKSPACE, '');
                         } else if (key.command == '=') {
                             state.events.emit(CalcEvent.COMMAND_EVALUATE, '');
                         }
