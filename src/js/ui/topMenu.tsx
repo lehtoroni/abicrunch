@@ -28,12 +28,15 @@ export function AbicrunchTopMenu(props: { state: GlobalState }) {
                         state.events.emit(CalcEvent.SCOPE_UPDATE, state.scope);
                     }
                 },
+                /*
                 {
                     title: <Lang fi='Sulje' en='Quit'/>,
                     onClick: () => {
-                        window.close();
+                        
+                        //window.close();
                     }
                 }
+                */
             ]
         },
         {
