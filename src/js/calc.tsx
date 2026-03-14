@@ -159,8 +159,6 @@ export function AbicrunchCalc(props: {
                 const REGEX_IGNORE = /\)/gmi;
                 const TIMES_SYMBOL = props.mode == 'exam' ? '×' : '*';
                 
-                console.log(lastType, nextType);
-                
                 if (!REGEX_IGNORE.test(addValue) && lastSymbol != '' && addValue != '') {
                     if ((lastType != nextType
                         && lastType != 'operator'
