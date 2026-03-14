@@ -34,6 +34,11 @@ body {
         max-height: 300px;
     }
     
+    .mode-exam.standalone & {
+        max-width: 350px;
+        max-height: 400px;
+    }
+    
     border: 1px solid gray;
     border-radius: 4px;
     padding: 4px;
@@ -60,7 +65,7 @@ body {
         height: 100%;
         overflow: hidden;
         
-        .mode-simple & {
+        .mode-simple &, .mode-exam & {
             grid-template-rows: min-content auto;
         }
         
@@ -71,7 +76,7 @@ body {
             overflow: hidden;
             height: 100%;
             
-            .mode-simple & {
+            .mode-simple &, .mode-exam & {
                 height: auto;
             }
             
@@ -113,7 +118,7 @@ body {
         justify-content: start;
         gap: 2px;
         
-        .mode-simple & {
+        .mode-simple &, .mode-exam & {
             display: none;
         }
     }
@@ -131,7 +136,7 @@ body {
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
         
-        .mode-simple & {
+        .mode-simple &, .mode-exam & {
             overflow-y: hidden;
             overflow-x: hidden;
             word-wrap: break-word;
@@ -143,7 +148,7 @@ body {
             padding: 8px;
             --output-color: rgb(0, 128, 62);
                 
-            .mode-simple & {
+            .mode-simple &, .mode-exam & {
                 text-align: right;
                 line-height: 100%;
             } 
@@ -189,7 +194,7 @@ body {
                 box-shadow: inset -1px -1px 0 #0077ff, inset 1px 1px 0 #0077ff, inset 1px -1px 0 #0077ff, inset -1px 2px 0 #0077ff;
             }
             
-            .mode-simple & {
+            .mode-simple &, .mode-exam & {
                 text-align: right;
             }
         }
@@ -396,6 +401,10 @@ i[class^="ri-"] {
         max-height: 400px;
     }
     
+    .mode-exam & {
+        grid-template-columns: repeat(5, 1fr);
+    }
+    
     .key {
         display: flex;
         padding: 2px 0;
@@ -410,8 +419,44 @@ i[class^="ri-"] {
         font-size: 13px;
         cursor: pointer;
         
+        .mode-exam & {
+            font-size: 15px;
+        }
+        
+        --hover: rgba(255, 255, 255, 0.9);
+        
         &:has(b) {
             background-color: rgba(255, 255, 255, 0.9);
+        }
+        
+        &:has(.green) {
+            background-color: rgba(75, 211, 95, 0.606);
+            --hover: rgba(188, 255, 198, 0.606);
+        }
+        
+        &:has(.blue) {
+            background-color: rgba(173, 211, 255, 0.644);
+            --hover: rgba(112, 212, 255, 0.606);
+        }
+        
+        &:has(.red) {
+            background-color: rgba(211, 75, 98, 0.9);
+            --hover: rgba(255, 165, 165, 0.606);
+        }
+        
+        &:has(.black) {
+            background-color: rgba(0, 0, 0, 0.712);
+            --hover: rgba(0, 0, 0, 0.606);
+            color: white;
+        }
+        
+        .memory-in &:has(.memory-green) {
+            background-color: rgba(75, 211, 95, 0.606);
+            --hover: rgba(188, 255, 198, 0.606);
+        }
+        
+        &:has(.empty) {
+            visibility: hidden;
         }
         
         b {
@@ -428,7 +473,7 @@ i[class^="ri-"] {
         }
         
         &:hover {
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: var(--hover);
             border-color: var(--color-accent);
         }
     }

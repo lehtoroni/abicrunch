@@ -78,3 +78,41 @@ export function convertUnicodeExponents(str: string) {
 export function convertUnicodeConstants(str: string) {
     return str.replace(/π/gm, '(pi)');
 }
+
+export function convertExamSyntax(str: string) {
+    
+    const openPars = (str.match(/\(/g) || []).length;
+    const closePars = (str.match(/\)/g) || []).length;
+    
+    if (openPars > closePars) {
+        str = str + ')'.repeat(openPars-closePars);
+    }
+    
+    return str.replace(/×/gm, '*')
+        .replace(/÷/gm, '/')
+        .replace(/√/gm, 'sqrt')
+        .replace(/asin/gmi, 'arcsin')
+        .replace(/acos/gmi, 'arccos')
+        .replace(/atan/gmi, 'arctan')
+        ;
+    
+}
+
+export function getSymbolType(s: string) {
+    if (/[0-9\.]/.test(s[0] || '')) {
+        return 'number';
+    }
+    if (['.', '+', '-', '*', '/', '×', '÷', '^'].includes(s[0] || '')) {
+        return 'operator';
+    }
+    if (s == '(') {
+        return 'open';
+    }
+    if (s == ')') {
+        return 'close';
+    }
+    if (['π', 'e'].includes(s[0] || '') || s == 'ANS' || s == 'ans') {
+        return 'literal';
+    }
+    return 'other';
+}

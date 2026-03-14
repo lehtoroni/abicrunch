@@ -86,7 +86,7 @@ if (baseParams.has('view') && baseParams.get('view') == 'standalone') {
     document.body.classList.add('standalone');
 }
 
-let calcMode: 'simple' | 'full' = 'full';
+let calcMode: 'simple' | 'full' | 'exam' = 'full';
 if (baseParams.has('mode')) {
     
     const mode = baseParams.get('mode');
@@ -97,6 +97,15 @@ if (baseParams.has('mode')) {
         document.body.classList.add('mode-simple');
         
         GLOBAL_STATE.prefs.precision = 20;
+        GLOBAL_STATE.prefs.isKeypadVisible = true;
+        GLOBAL_STATE.prefs.isSidebarVisible = false;
+        
+    } else if (mode == 'exam') {
+        
+        calcMode = 'exam';
+        document.body.classList.add('mode-exam');
+        
+        GLOBAL_STATE.prefs.precision = 12;
         GLOBAL_STATE.prefs.isKeypadVisible = true;
         GLOBAL_STATE.prefs.isSidebarVisible = false;
         

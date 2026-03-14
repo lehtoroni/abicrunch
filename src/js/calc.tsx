@@ -16,7 +16,7 @@ import { AbicrunchTopMenu } from './ui/topMenu';
 import { RemixIcon } from './utils/remixicon';
 import { CalcCommand, CalcCommandPalette } from './ui/palette';
 import { CalcVariablePalette } from './ui/variables';
-import { convertUnicodeConstants, convertUnicodeExponents } from './utils/utils';
+import { convertExamSyntax, convertUnicodeConstants, convertUnicodeExponents, getSymbolType } from './utils/utils';
 import { CalcKeypad } from './ui/keypad';
 import { CalcHelp } from './ui/help';
 
@@ -29,7 +29,7 @@ export type HistoryLine = {
 
 export function AbicrunchCalc(props: {
     state: GlobalState,
-    mode: 'simple' | 'full'
+    mode: 'simple' | 'full' | 'exam'
 }) {
     
     const { state } = props;
@@ -37,6 +37,7 @@ export function AbicrunchCalc(props: {
     const [historyLines, setHistoryLines] = useState<HistoryLine[]>([]);
     const [historyBrowse, setHistoryBrowse] = useState<number>(0);
     
+    const [memoryContent, setMemoryContent] = useState<string>('');
     const [inputText, setInputText] = useState<string>('');
     const [selection, setSelection] = useState({ start: 0, end: 0, direction: 'forward' });
     const refHistory = useRef<HTMLDivElement>(null);
@@ -48,8 +49,18 @@ export function AbicrunchCalc(props: {
     function evalLine(line: string) {
         try {
             
+            const historyLine = line;
+            
             line = convertUnicodeExponents(line);
             line = convertUnicodeConstants(line);
+            
+            if (props.mode == 'exam') {
+                try {
+                    line = convertExamSyntax(line);
+                } catch (err) {
+                    console.error(err);
+                }
+            }
             
             const expr = parser.parse(line);
             const res = expr.evaluate(state.scope);
@@ -66,7 +77,7 @@ export function AbicrunchCalc(props: {
             state.scope[`ans`] = res;
             
             setHistoryLines(l => [...l, {
-                input: line,
+                input: historyLine,
                 output: `${resDisplay}`
             }])
             
@@ -133,9 +144,42 @@ export function AbicrunchCalc(props: {
             setInputText(`${toValue ?? ''}`);
         }
         
+        
+        
         function onInsertExpression(addValue: string, commandInfo: CalcCommand) {
-            console.log(selection.start, selection.end)
-            if (selection.start != selection.end) {
+            
+            if (props.mode == 'exam') {
+                
+                setHistoryLines([]);
+                
+                const lastSymbol = inputText.length > 0 ? inputText[inputText.length-1] : '';
+                let lastType = getSymbolType(lastSymbol);
+                let nextType = getSymbolType(addValue);
+                
+                const REGEX_IGNORE = /\)/gmi;
+                const TIMES_SYMBOL = props.mode == 'exam' ? '×' : '*';
+                
+                console.log(lastType, nextType);
+                
+                if (!REGEX_IGNORE.test(addValue) && lastSymbol != '' && addValue != '') {
+                    if ((lastType != nextType
+                        && lastType != 'operator'
+                        && lastType != 'open'
+                        && nextType != 'operator')
+                        || (lastType == 'literal' && nextType == 'literal')) {
+                        addValue = TIMES_SYMBOL + addValue;
+                    }
+                }
+                
+                const cursorPos = selection.start;
+                setInputText(t => t.substring(0, cursorPos) + addValue + t.substring(cursorPos));
+                setSelection({
+                    direction: 'forward',
+                    start: cursorPos + addValue.length,
+                    end: cursorPos + addValue.length
+                });
+                
+            } else if (selection.start != selection.end) {
                 if (commandInfo.brackets) {
                     setInputText(t => t.substring(0, selection.start) + addValue + '(' + t.substring(selection.start, selection.end) + ')' + t.substring(selection.end));
                     setSelection({
@@ -169,11 +213,13 @@ export function AbicrunchCalc(props: {
                     });
                 }
             }
+            
             setTimeout(() => {
                 if (document.activeElement != refInput.current) {
                     refInput.current?.focus();
                 }
             }, 1);
+            
         }
         
         state.events.addListener(CalcEvent.COMMAND_COPY_LAST, onCopyLast);
@@ -233,16 +279,36 @@ export function AbicrunchCalc(props: {
             setInputText(t => `${t}`.slice(0, -1))
         }
         
+        function onCommandSpecial(c: 'mIn' | 'mOut') {
+            if (c == 'mIn') {
+                setMemoryContent(inputText);
+            } else if (c == 'mOut') {
+                setMemoryContent(mem => {
+                    // this is a stupid hack :D
+                    setInputText(t => `${t}${mem}`)
+                    return mem;
+                })
+            }
+        }
+        
+        if (memoryContent != '') {
+            document.body.classList.add('memory-in');
+        } else {
+            document.body.classList.remove('memory-in');
+        }
+        
         state.events.addListener(CalcEvent.COMMAND_SELECT_EXPRESSION, onSelectExpression);
         state.events.addListener(CalcEvent.COMMAND_WRAP_EXPRESSION, onWrapExpression);
         state.events.addListener(CalcEvent.COMMAND_EVALUATE, onEvalExpression);
         state.events.addListener(CalcEvent.COMMAND_BACKSPACE, onBackspace);
+        state.events.addListener(CalcEvent.COMMAND_SPECIAL, onCommandSpecial);
         
         return () => {
             state.events.removeListener(CalcEvent.COMMAND_SELECT_EXPRESSION, onSelectExpression);
             state.events.removeListener(CalcEvent.COMMAND_WRAP_EXPRESSION, onWrapExpression);
             state.events.removeListener(CalcEvent.COMMAND_EVALUATE, onEvalExpression);
             state.events.removeListener(CalcEvent.COMMAND_BACKSPACE, onBackspace);
+            state.events.removeListener(CalcEvent.COMMAND_BACKSPACE, onCommandSpecial);
         };
         
     }, [selection, inputText]);
@@ -296,27 +362,36 @@ export function AbicrunchCalc(props: {
                 
                 <div className='left'>
                     <div className='history' ref={refHistory}>
-                        {props.mode == 'simple'
-                            ? <Fragment>
-                                {historyLines.length > 0 && historyLines.at(-1)
-                                    ? <div className='history-line'
-                                        data-has-error={`${historyLines.at(-1)?.hasError ?? false}`}>
-                                        <div className='out'>{historyLines.at(-1)?.output}</div>
-                                    </div>
-                                    : <div className='history-line'>
-                                        <div className='out'>&nbsp;</div>
-                                    </div>}
-                            </Fragment>
-                            : <Fragment>
-                                {historyLines.map((line, n) =>
-                                    <div className='history-line'
-                                        data-has-error={`${line.hasError ?? false}`}
-                                        key={n}>
-                                        <div className='in'>{line.input}</div>
-                                        <div className='out'>= {line.output}</div>
-                                    </div>
-                                )}
-                            </Fragment>}
+                        {props.mode == 'exam' && <Fragment>
+                            {historyLines.length > 0 && historyLines.at(-1)
+                            ? <div className='history-line'
+                                data-has-error={`${historyLines.at(-1)?.hasError ?? false}`}>
+                                <div className='out'>{historyLines.at(-1)?.hasError ? historyLines.at(-1)?.output : historyLines.at(-1)?.input}</div>
+                            </div>
+                            : <div className='history-line'>
+                                <div className='out'>&nbsp;</div>
+                            </div>}
+                        </Fragment>}
+                        {props.mode == 'simple' && <Fragment>
+                            {historyLines.length > 0 && historyLines.at(-1)
+                                ? <div className='history-line'
+                                    data-has-error={`${historyLines.at(-1)?.hasError ?? false}`}>
+                                    <div className='out'>{historyLines.at(-1)?.output}</div>
+                                </div>
+                                : <div className='history-line'>
+                                    <div className='out'>&nbsp;</div>
+                                </div>}
+                        </Fragment>}
+                        {props.mode == 'full' && <Fragment>
+                            {historyLines.map((line, n) =>
+                                <div className='history-line'
+                                    data-has-error={`${line.hasError ?? false}`}
+                                    key={n}>
+                                    <div className='in'>{line.input}</div>
+                                    <div className='out'>= {line.output}</div>
+                                </div>
+                            )}
+                        </Fragment>}
                     </div>
                     
                     <div className='input'>
@@ -324,7 +399,10 @@ export function AbicrunchCalc(props: {
                             autoComplete={'off'}
                             spellcheck={false}
                             ref={refInput}
-                            value={inputText}
+                            data-is-value={`${props.mode == 'exam' && historyLines.length > 0}`}
+                            value={props.mode == 'exam' && historyLines.length > 0
+                                    ? historyLines.at(-1)?.output
+                                    : inputText}
                             onInput={e => {
                                 setInputText(e.currentTarget.value);
                                 setSelection({
@@ -334,7 +412,11 @@ export function AbicrunchCalc(props: {
                                 });
                             }}
                             onKeyDown={e => {
-                                if (e.key == 'Enter') {
+                                if (props.mode == 'exam') {
+                                    if (historyLines.length > 0) {
+                                        setHistoryLines([]);
+                                    }
+                                } else if (e.key == 'Enter') {
                                     e.preventDefault();
                                     e.stopPropagation();
                                     evalLine(inputText);
