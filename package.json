@@ -1,17 +1,16 @@
 {
-  "name": "abicrunch",
-  "version": "0.0.1",
-  "description": "Wannabe Scientific Calculator for Digital Examination Systems",
+  "name": "kraks",
+  "version": "0.1.0",
+  "description": "Wannabe Scientific Calculator",
   "scripts": {
     "dev": "parcel src/index.html",
-    "build": "parcel build src/index.html --no-source-maps",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "parcel build src/index.html --no-source-maps"
   },
   "author": "https://github.com/lehtoroni/",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lehtoroni/abicrunch.git"
+    "url": "https://github.com/lehtoroni/kraks.git"
   },
   "devDependencies": {
     "@parcel/transformer-less": "^2.9.3",
